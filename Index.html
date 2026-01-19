@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Limpiolux - Cotizador de Servicios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #0a2540;
+      --color-secondary: #1a73e8;
+      --color-accent: #00d4aa;
+      --color-warning: #f5a623;
+      --color-surface: #f8fafc;
+      --color-surface-elevated: #ffffff;
+      --color-text: #0a2540;
+      --color-text-muted: #5c6b7a;
+      --color-border: #e2e8f0;
+      --color-border-focus: #1a73e8;
+      --font-primary: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+      --space-3xl: 4rem;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --shadow-sm: 0 1px 2px rgba(10, 37, 64, 0.04);
+      --shadow-md: 0 4px 12px rgba(10, 37, 64, 0.08);
+      --shadow-lg: 0 8px 24px rgba(10, 37, 64, 0.12);
+      --shadow-xl: 0 16px 48px rgba(10, 37, 64, 0.16);
+      --transition-fast: 150ms ease;
+      --transition-normal: 250ms ease;
+      --transition-slow: 400ms ease;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { font-family: var(--font-primary); background: var(--color-surface); color: var(--color-text); line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; padding-top: 32px; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 25% 25%, rgba(26, 115, 232, 0.03) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(0, 212, 170, 0.03) 0%, transparent 50%); pointer-events: none; z-index: -1; }
+    .app { max-width: 1200px; margin: 0 auto; padding: var(--space-xl); }
+    .header { text-align: center; margin-bottom: var(--space-3xl); padding: var(--space-2xl) 0; }
+    .header__logo { display: flex; align-items: center; justify-content: center; gap: var(--space-md); margin-bottom: var(--space-lg); }
+    .header__logo-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; }
+    .header__logo-icon svg { width: 28px; height: 28px; color: white; }
+    .header__brand { font-size: 2rem; font-weight: 700; color: var(--color-primary); letter-spacing: -0.02em; }
+    .header__title { font-size: 1.25rem; font-weight: 500; color: var(--color-text-muted); margin-bottom: var(--space-sm); }
+    .header__badge { display: inline-flex; align-items: center; gap: var(--space-xs); padding: var(--space-xs) var(--space-md); background: rgba(0, 212, 170, 0.1); color: #00a080; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-radius: var(--radius-xl); font-family: var(--font-mono); }
+    .cotizador { display: grid; grid-template-columns: 1fr 380px; gap: var(--space-xl); align-items: start; }
+    @media (max-width: 900px) { .cotizador { grid-template-columns: 1fr; } }
+    .card { background: var(--color-surface-elevated); border-radius: var(--radius-xl); padding: var(--space-xl); box-shadow: var(--shadow-md); border: 1px solid var(--color-border); animation: fadeIn var(--transition-slow) ease-out; }
+    .card--sticky { position: sticky; top: var(--space-xl); }
+    .card__header { margin-bottom: var(--space-xl); padding-bottom: var(--space-lg); border-bottom: 1px solid var(--color-border); }
+    .card__title { font-size: 1.125rem; font-weight: 600; color: var(--color-primary); display: flex; align-items: center; gap: var(--space-sm); }
+    .card__title-icon { width: 24px; height: 24px; color: var(--color-secondary); }
+    .form-section { margin-bottom: var(--space-xl); }
+    .form-section:last-child { margin-bottom: 0; }
+    .form-section__title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-muted); margin-bottom: var(--space-md); font-family: var(--font-mono); }
+    .form-group { margin-bottom: var(--space-lg); }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--color-text); margin-bottom: var(--space-sm); }
+    .form-label__hint { font-weight: 400; color: var(--color-text-muted); margin-left: var(--space-xs); }
+    .form-input, .form-select { width: 100%; padding: var(--space-md); font-size: 1rem; font-family: var(--font-primary); color: var(--color-text); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); transition: all var(--transition-fast); }
+    .form-input:focus, .form-select:focus { outline: none; border-color: var(--color-border-focus); box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1); }
+    .form-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235c6b7a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right var(--space-md) center; padding-right: var(--space-2xl); }
+    .input-with-unit { position: relative; }
+    .input-with-unit .form-input { padding-right: 60px; }
+    .input-with-unit__unit { position: absolute; right: var(--space-md); top: 50%; transform: translateY(-50%); font-size: 0.875rem; font-weight: 500; color: var(--color-text-muted); font-family: var(--font-mono); }
+    .option-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); }
+    .option-card { position: relative; padding: var(--space-md); background: var(--color-surface); border: 2px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); text-align: center; }
+    .option-card:hover { border-color: var(--color-secondary); background: rgba(26, 115, 232, 0.02); }
+    .option-card--selected { border-color: var(--color-secondary); background: rgba(26, 115, 232, 0.05); }
+    .option-card__icon { font-size: 1.5rem; margin-bottom: var(--space-xs); }
+    .option-card__label { font-size: 0.8125rem; font-weight: 500; color: var(--color-text); line-height: 1.3; }
+    .option-card__factor { font-size: 0.6875rem; font-family: var(--font-mono); color: var(--color-text-muted); margin-top: var(--space-xs); }
+    .option-card input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .addon-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .addon-item { display: flex; align-items: center; justify-content: space-between; padding: var(--space-md); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); }
+    .addon-item:hover { border-color: var(--color-secondary); }
+    .addon-item--selected { border-color: var(--color-secondary); background: rgba(26, 115, 232, 0.05); }
+    .addon-item__left { display: flex; align-items: center; gap: var(--space-md); }
+    .addon-item__checkbox { width: 20px; height: 20px; border: 2px solid var(--color-border); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; transition: all var(--transition-fast); flex-shrink: 0; }
+    .addon-item--selected .addon-item__checkbox { background: var(--color-secondary); border-color: var(--color-secondary); }
+    .addon-item__checkbox svg { width: 14px; height: 14px; color: white; opacity: 0; transition: opacity var(--transition-fast); }
+    .addon-item--selected .addon-item__checkbox svg { opacity: 1; }
+    .addon-item__label { font-size: 0.875rem; font-weight: 500; color: var(--color-text); }
+    .addon-item__price { font-size: 0.8125rem; font-family: var(--font-mono); color: var(--color-accent); font-weight: 600; }
+    .price-card { background: linear-gradient(135deg, var(--color-primary) 0%, #1e3a5f 100%); color: white; border: none; }
+    .price-card .card__header { border-bottom-color: rgba(255, 255, 255, 0.1); }
+    .price-card .card__title { color: white; }
+    .price-card .card__title-icon { color: var(--color-accent); }
+    .price-breakdown { margin-bottom: var(--space-xl); }
+    .price-row { display: flex; justify-content: space-between; align-items: center; padding: var(--space-sm) 0; font-size: 0.875rem; }
+    .price-row--muted { color: rgba(255, 255, 255, 0.6); }
+    .price-row__label { display: flex; align-items: center; gap: var(--space-xs); }
+    .price-row__value { font-family: var(--font-mono); font-weight: 500; }
+    .price-row__factor { font-size: 0.75rem; color: var(--color-accent); font-family: var(--font-mono); margin-left: 4px; }
+    .price-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: var(--space-md) 0; }
+    .price-total { text-align: center; padding: var(--space-lg) 0; }
+    .price-total__label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.6); margin-bottom: var(--space-xs); font-family: var(--font-mono); }
+    .price-total__amount { font-size: 2.5rem; font-weight: 700; color: var(--color-accent); font-family: var(--font-mono); line-height: 1; }
+    .price-total__period { font-size: 1rem; color: rgba(255, 255, 255, 0.6); margin-top: var(--space-xs); }
+    .price-total__m2 { font-size: 0.875rem; color: rgba(255, 255, 255, 0.5); margin-top: var(--space-sm); font-family: var(--font-mono); }
+    .btn-cta { width: 100%; padding: var(--space-md) var(--space-xl); font-size: 1rem; font-weight: 600; font-family: var(--font-primary); color: var(--color-primary); background: var(--color-accent); border: none; border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); margin-top: var(--space-lg); }
+    .btn-cta:hover { background: #00e6b8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3); }
+    .price-note { text-align: center; font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: var(--space-lg); line-height: 1.5; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .poc-banner { position: fixed; top: 0; left: 0; right: 0; background: var(--color-warning); color: var(--color-primary); text-align: center; padding: var(--space-xs) var(--space-md); font-size: 0.75rem; font-weight: 600; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; z-index: 1000; }
+    @media (max-width: 600px) { .app { padding: var(--space-md); } .option-cards { grid-template-columns: 1fr; } .price-total__amount { font-size: 2rem; } }
+  </style>
+</head>
+<body>
+  <div class="poc-banner">⚠️ POC - Pricing simulado | Próximo paso: conectar con Revenue Cloud APIs</div>
+  <div class="app">
+    <header class="header">
+      <div class="header__logo">
+        <div class="header__logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9,22 9,12 15,12 15,22" />
+          </svg>
+        </div>
+        <span class="header__brand">Limpiolux</span>
+      </div>
+      <h1 class="header__title">Cotizador de Servicios de Limpieza</h1>
+      <span class="header__badge"><span>●</span> Cotización instantánea</span>
+    </header>
+
+    <div class="cotizador">
+      <!-- FORM -->
+      <div class="card">
+        <div class="card__header">
+          <h2 class="card__title">
+            <svg class="card__title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Configurá tu Servicio
+          </h2>
+        </div>
+        
+        <!-- Tipo de Espacio -->
+        <div class="form-section">
+          <div class="form-section__title">Tipo de Instalación</div>
+          <div class="option-cards" id="spaceTypes"></div>
+        </div>
+        
+        <!-- Metros Cuadrados -->
+        <div class="form-section">
+          <div class="form-section__title">Superficie</div>
+          <div class="form-group">
+            <label class="form-label">Metros cuadrados <span class="form-label__hint">(mín. 100 m²)</span></label>
+            <div class="input-with-unit">
+              <input type="number" class="form-input" id="m2Input" value="500" min="100" step="50" />
+              <span class="input-with-unit__unit">m²</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Frecuencia -->
+        <div class="form-section">
+          <div class="form-section__title">Frecuencia de Servicio</div>
+          <div class="form-group">
+            <select class="form-select" id="frequencySelect"></select>
+          </div>
+        </div>
+        
+        <!-- Horario -->
+        <div class="form-section">
+          <div class="form-section__title">Horario de Servicio</div>
+          <div class="option-cards" id="schedules"></div>
+        </div>
+        
+        <!-- Add-ons -->
+        <div class="form-section">
+          <div class="form-section__title">Servicios Adicionales (Opcionales)</div>
+          <div class="addon-list" id="addons"></div>
+        </div>
+      </div>
+
+      <!-- PRICE CARD -->
+      <div class="card card--sticky price-card">
+        <div class="card__header">
+          <h2 class="card__title">
+            <svg class="card__title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Resumen de Cotización
+          </h2>
+        </div>
+        <div class="price-breakdown" id="priceBreakdown"></div>
+        <div class="price-total">
+          <div class="price-total__label">Total Mensual</div>
+          <div class="price-total__amount" id="totalPrice">$0</div>
+          <div class="price-total__period">ARS / mes</div>
+          <div class="price-total__m2" id="pricePerM2">$0 por m²</div>
+        </div>
+        <button class="btn-cta" id="submitBtn">Solicitar Propuesta Formal</button>
+        <p class="price-note">* Precio estimado sujeto a visita técnica.<br>IVA no incluido. Contrato mínimo 12 meses.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // PRICING CONFIG
+    const CONFIG = {
+      basePricePerM2: 850,
+      spaceTypes: [
+        { id: 'office', label: 'Oficinas', icon: '🏢', factor: 1.0 },
+        { id: 'commercial', label: 'Comercial', icon: '🏪', factor: 1.15 },
+        { id: 'industrial', label: 'Industrial', icon: '🏭', factor: 0.85 },
+        { id: 'healthcare', label: 'Salud', icon: '🏥', factor: 1.45 },
+        { id: 'laboratory', label: 'Laboratorio', icon: '🔬', factor: 1.65 },
+        { id: 'food', label: 'Alimentos', icon: '🍽️', factor: 1.55 },
+      ],
+      frequencies: [
+        { id: 'daily', label: 'Diario (L-V)', factor: 1.0 },
+        { id: 'daily_full', label: 'Diario (L-S)', factor: 1.15 },
+        { id: 'weekly_3', label: '3 veces/semana', factor: 0.70 },
+        { id: 'weekly_2', label: '2 veces/semana', factor: 0.55 },
+        { id: 'weekly_1', label: '1 vez/semana', factor: 0.35 },
+      ],
+      schedules: [
+        { id: 'business', label: 'Horario laboral', icon: '☀️', factor: 1.0 },
+        { id: 'after_hours', label: 'Fuera de horario', icon: '🌅', factor: 1.10 },
+        { id: 'night', label: 'Nocturno', icon: '🌙', factor: 1.25 },
+        { id: 'weekend', label: 'Fin de semana', icon: '📅', factor: 1.35 },
+      ],
+      addons: [
+        { id: 'cristales', label: 'Limpieza de cristales', pricePerM2: 45 },
+        { id: 'sanitizacion', label: 'Sanitización profunda', pricePerM2: 85 },
+        { id: 'pisos', label: 'Tratamiento de pisos', pricePerM2: 65 },
+        { id: 'alfombras', label: 'Limpieza de alfombras', pricePerM2: 55 },
+        { id: 'fachada', label: 'Limpieza de fachada', pricePerM2: 35 },
+      ],
+    };
+
+    // STATE
+    let state = {
+      spaceType: 'office',
+      m2: 500,
+      frequency: 'daily',
+      schedule: 'business',
+      addons: [],
+    };
+
+    // RENDER FUNCTIONS
+    function renderSpaceTypes() {
+      const container = document.getElementById('spaceTypes');
+      container.innerHTML = CONFIG.spaceTypes.map(opt => `
+        <label class="option-card ${state.spaceType === opt.id ? 'option-card--selected' : ''}" data-id="${opt.id}" data-type="spaceType">
+          <input type="radio" name="spaceType" ${state.spaceType === opt.id ? 'checked' : ''}>
+          <div class="option-card__icon">${opt.icon}</div>
+          <div class="option-card__label">${opt.label}</div>
+          <div class="option-card__factor">×${opt.factor.toFixed(2)}</div>
+        </label>
+      `).join('');
+    }
+
+    function renderFrequencies() {
+      const select = document.getElementById('frequencySelect');
+      select.innerHTML = CONFIG.frequencies.map(opt => 
+        `<option value="${opt.id}" ${state.frequency === opt.id ? 'selected' : ''}>${opt.label} (×${opt.factor.toFixed(2)})</option>`
+      ).join('');
+    }
+
+    function renderSchedules() {
+      const container = document.getElementById('schedules');
+      container.innerHTML = CONFIG.schedules.map(opt => `
+        <label class="option-card ${state.schedule === opt.id ? 'option-card--selected' : ''}" data-id="${opt.id}" data-type="schedule">
+          <input type="radio" name="schedule" ${state.schedule === opt.id ? 'checked' : ''}>
+          <div class="option-card__icon">${opt.icon}</div>
+          <div class="option-card__label">${opt.label}</div>
+          <div class="option-card__factor">×${opt.factor.toFixed(2)}</div>
+        </label>
+      `).join('');
+    }
+
+    function renderAddons() {
+      const container = document.getElementById('addons');
+      container.innerHTML = CONFIG.addons.map(addon => {
+        const monthly = addon.pricePerM2 * state.m2;
+        const selected = state.addons.includes(addon.id);
+        return `
+          <div class="addon-item ${selected ? 'addon-item--selected' : ''}" data-id="${addon.id}">
+            <div class="addon-item__left">
+              <div class="addon-item__checkbox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+              </div>
+              <span class="addon-item__label">${addon.label}</span>
+            </div>
+            <span class="addon-item__price">+$${monthly.toLocaleString('es-AR')}/mes</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function calculatePricing() {
+      const spaceType = CONFIG.spaceTypes.find(s => s.id === state.spaceType);
+      const frequency = CONFIG.frequencies.find(f => f.id === state.frequency);
+      const schedule = CONFIG.schedules.find(s => s.id === state.schedule);
+      
+      const basePrice = CONFIG.basePricePerM2 * state.m2;
+      const subtotal = basePrice * spaceType.factor * frequency.factor * schedule.factor;
+      const addonsTotal = state.addons.reduce((total, addonId) => {
+        const addon = CONFIG.addons.find(a => a.id === addonId);
+        return total + (addon ? addon.pricePerM2 * state.m2 : 0);
+      }, 0);
+      const total = subtotal + addonsTotal;
+      const pricePerM2 = total / state.m2;
+
+      return { basePrice, spaceType, frequency, schedule, subtotal, addonsTotal, total, pricePerM2 };
+    }
+
+    function renderPricing() {
+      const p = calculatePricing();
+      
+      document.getElementById('priceBreakdown').innerHTML = `
+        <div class="price-row price-row--muted">
+          <span class="price-row__label">Base (${state.m2} m² × $${CONFIG.basePricePerM2})</span>
+          <span class="price-row__value">$${Math.round(p.basePrice).toLocaleString('es-AR')}</span>
+        </div>
+        <div class="price-row">
+          <span class="price-row__label">Tipo: ${p.spaceType.label}<span class="price-row__factor">×${p.spaceType.factor.toFixed(2)}</span></span>
+        </div>
+        <div class="price-row">
+          <span class="price-row__label">Frecuencia: ${p.frequency.label}<span class="price-row__factor">×${p.frequency.factor.toFixed(2)}</span></span>
+        </div>
+        <div class="price-row">
+          <span class="price-row__label">Horario: ${p.schedule.label}<span class="price-row__factor">×${p.schedule.factor.toFixed(2)}</span></span>
+        </div>
+        <div class="price-divider"></div>
+        <div class="price-row">
+          <span class="price-row__label">Subtotal servicio</span>
+          <span class="price-row__value">$${Math.round(p.subtotal).toLocaleString('es-AR')}</span>
+        </div>
+        ${p.addonsTotal > 0 ? `
+        <div class="price-row">
+          <span class="price-row__label">Add-ons</span>
+          <span class="price-row__value">+$${Math.round(p.addonsTotal).toLocaleString('es-AR')}</span>
+        </div>
+        ` : ''}
+      `;
+
+      document.getElementById('totalPrice').textContent = `$${Math.round(p.total).toLocaleString('es-AR')}`;
+      document.getElementById('pricePerM2').textContent = `$${Math.round(p.pricePerM2).toLocaleString('es-AR')} por m²`;
+    }
+
+    function render() {
+      renderSpaceTypes();
+      renderFrequencies();
+      renderSchedules();
+      renderAddons();
+      renderPricing();
+    }
+
+    // EVENT LISTENERS
+    document.getElementById('spaceTypes').addEventListener('click', (e) => {
+      const card = e.target.closest('.option-card');
+      if (card) { state.spaceType = card.dataset.id; render(); }
+    });
+
+    document.getElementById('schedules').addEventListener('click', (e) => {
+      const card = e.target.closest('.option-card');
+      if (card) { state.schedule = card.dataset.id; render(); }
+    });
+
+    document.getElementById('frequencySelect').addEventListener('change', (e) => {
+      state.frequency = e.target.value; render();
+    });
+
+    document.getElementById('m2Input').addEventListener('input', (e) => {
+      state.m2 = Math.max(100, parseInt(e.target.value) || 100); render();
+    });
+
+    document.getElementById('addons').addEventListener('click', (e) => {
+      const item = e.target.closest('.addon-item');
+      if (item) {
+        const id = item.dataset.id;
+        state.addons = state.addons.includes(id) 
+          ? state.addons.filter(a => a !== id) 
+          : [...state.addons, id];
+        render();
+      }
+    });
+
+    document.getElementById('submitBtn').addEventListener('click', () => {
+      const p = calculatePricing();
+      alert(`¡Cotización lista!\n\nTotal: $${Math.round(p.total).toLocaleString('es-AR')}/mes\n\nEn producción, esto crearía una Quote en Salesforce Revenue Cloud.`);
+    });
+
+    // INIT
+    render();
+  </script>
+</body>
+</html>
